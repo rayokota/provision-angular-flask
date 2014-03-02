@@ -1,0 +1,8 @@
+---
+- name: Install Yeoman
+  npm: name=yo
+       global=yes
+
+- name: Install Angular-Flask Generator
+  npm: name=generator-angular-flask
+       global=yes

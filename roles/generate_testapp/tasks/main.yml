@@ -1,0 +1,55 @@
+---
+- name: Copy application Expect script
+  copy: src=generate_app.exp dest=/tmp/generate_app.exp
+  sudo: false
+
+- name: Copy entity Expect script
+  copy: src=generate_entity.exp dest=/tmp/generate_entity.exp
+  sudo: false
+
+- name: Make application folder
+  file: path=/tmp/testapp state=directory
+  sudo: false
+
+- name: Generate application
+  command: chdir=/tmp/testapp /tmp/generate_app.exp
+  sudo: false
+
+- name: Install Python virtual environment
+  shell: chdir=/tmp/testapp ./install.sh >install.log
+  sudo: false
+
+- name: Generate entity
+  command: chdir=/tmp/testapp /tmp/generate_entity.exp
+  sudo: false
+
+- name: Migrate database
+  command: chdir=/tmp/testapp flask/bin/python db_create.py
+  sudo: false
+
+- name: Run application
+  shell: chdir=/tmp/testapp nohup flask/bin/python run.py >app.log 2>&1 &
+  sudo: false
+  async: 10
+  poll: 0
+
+- name: Wait for application
+  wait_for: port=5000 delay=10
+
+- name: Create entity
+  uri: url=http://localhost:5000/yourapp/yourentities method=POST
+       body='{"myattr":"mymessage"}' HEADER_Content-Type="application/json" status_code=201
+
+- name: Create entity with empty id (simulating AngularJS behavior)
+  uri: url=http://localhost:5000/yourapp/yourentities method=POST
+       body='{"id":"", "myattr":"mymessage"}' HEADER_Content-Type="application/json" status_code=201
+
+- name: Update entity
+  uri: url=http://localhost:5000/yourapp/yourentities/2 method=PUT
+       body='{"id":2, "myattr":"yourmessage"}' HEADER_Content-Type="application/json"
+
+- name: Delete entity
+  uri: url=http://localhost:5000/yourapp/yourentities/1 method=DELETE status_code=204
+
+- name: Get entities
+  uri: url=http://localhost:5000/yourapp/yourentities
