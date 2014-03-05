@@ -7,6 +7,9 @@
   apt: upgrade=yes
        update_cache=yes
 
+- name: Install curl
+  apt: pkg=curl
+
 - name: Install git
   apt: pkg=git
 
