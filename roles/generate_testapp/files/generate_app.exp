@@ -49,4 +49,7 @@ expect "*yeoman*"
 send -- "n\r"
 expect "*name*"
 send -- "yourapp\r"
+# bower asking for feedback
+expect "*bower*"
+send -- "\r"
 expect eof
