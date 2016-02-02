@@ -43,7 +43,7 @@ if {$force_conservative} {
 
 
 set timeout -1
-spawn yo angular-flask:entity yourentity --force
+spawn yo --no-insight angular-flask:entity yourentity --force
 match_max 100000
 expect "*name*"
 send -- "\r"

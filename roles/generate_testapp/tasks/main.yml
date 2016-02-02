@@ -14,6 +14,7 @@
 - name: Generate application
   command: chdir=/tmp/testapp /tmp/generate_app.exp
   sudo: false
+  ignore_errors: yes
 
 - name: Install Python virtual environment
   shell: chdir=/tmp/testapp ./install.sh >install.log
